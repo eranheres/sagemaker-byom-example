@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import subprocess
+from os import listdir
+from os.path import isfile, join
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route('/invocations', methods=['POST'])
+def invocations():
+    print("Got a request for prediction")
+    print(request.json)
+    return '{"v":Returning the location of prediction}'
+
+
+def start_server():
+    print('Starting TensorFlow Serving.')
+    model_dir = "/opt/ml/model"
+    only_files = [f for f in listdir(model_dir) if isfile(join(model_dir, f))]
+    print("I see the model in {}:{}".format(model_dir, str(only_files)), flush=True)
+
+    with open("{}/result_model.txt".format(model_dir), "r") as f:
+        lines = f.read()
+    print(lines)
+    # link the log streams to stdout/err so they will be logged to the container logs
+    subprocess.check_call(['ln', '-sf', '/dev/stdout', '/var/log/nginx/access.log'])
+    subprocess.check_call(['ln', '-sf', '/dev/stderr', '/var/log/nginx/error.log'])
+
+    # start nginx server
+    subprocess.Popen(['nginx', '-c', '/opt/ml/code/nginx.conf'])
+    print("before exec")
+    app.run()
+    print("after run")
+
+
+if __name__ == '__main__':
+    start_server()
