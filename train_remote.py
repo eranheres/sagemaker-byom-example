@@ -2,9 +2,10 @@
 
 import sagemaker
 import boto3
-import sys
+import time
 from sagemaker.estimator import Estimator
 import sagemaker as sage
+from sagemaker.predictor import json_serializer
 
 try:
     role = sagemaker.get_execution_role()
@@ -30,7 +31,7 @@ ecr_image = '{}.dkr.ecr.{}.amazonaws.com/{}:latest'.format(account, region, algo
 
 print(ecr_image)
 
-hyperparameters = {'train-steps': 100}
+hyperparameters = {'train-steps': 3}
 
 instance_type = 'ml.m4.xlarge'
 
@@ -42,24 +43,6 @@ estimator = Estimator(role=role,
 
 estimator.fit(data_location)
 
-sys.exit(0)
-try:
-    role = sagemaker.get_execution_role()
-except ValueError:
-    iam = boto3.client('iam')
-    role = iam.get_role(RoleName='sagemaker')['Role']['Arn']
-
-# train
-hyper_parameters = {'train-steps': 1}
-instance_type = 'local'
-estimator = Estimator(role=role,
-                      image_uri='sagemaker-example:latest',
-                      train_instance_count=1,
-                      train_instance_type=instance_type,
-                      image_name='sagemaker-example:latest',
-                      hyperparameters=hyper_parameters)
-estimator.fit('file://tmp/example-data')
-
 # deploy
 predictor = estimator.deploy(1, instance_type, wait=True)
 print("completed deploy")
@@ -70,4 +53,4 @@ predictor.serializer = json_serializer
 print("running prediction")
 predictor.predict({'my_info': [ "s3 location", "other things.." ]})
 print("predicted")
-predictor.delete_endpoint()
+#predictor.delete_endpoint()
