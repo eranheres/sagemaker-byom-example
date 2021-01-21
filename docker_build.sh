@@ -13,7 +13,7 @@ region=$(aws configure get region)
 #region=${region:-us-east-1}
 
 fullname="${account}.dkr.ecr.${region}.amazonaws.com/${algorithm_name}:latest"
-accoutfull="${account}.dkr.ecr.${region}.amazonaws.com"
+accountfull="${account}.dkr.ecr.${region}.amazonaws.com"
 
 # If the repository doesn't exist in ECR, create it.
 

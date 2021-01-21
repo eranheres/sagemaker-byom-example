@@ -3,7 +3,7 @@
 import sagemaker
 import time
 from sagemaker.estimator import Estimator
-from sagemaker.predictor import json_serializer, json_deserializer
+from sagemaker.serializers import JSONSerializer
 import boto3
 
 
@@ -18,11 +18,11 @@ hyper_parameters = {'train-steps': 1}
 instance_type = 'local'
 estimator = Estimator(role=role,
                       image_uri='sagemaker-example:latest',
-                      train_instance_count=1,
-                      train_instance_type=instance_type,
+                      instance_count=1,
+                      instance_type=instance_type,
                       image_name='sagemaker-example:latest',
                       hyperparameters=hyper_parameters)
-estimator.fit('file://tmp/example-data')
+estimator.fit('file://tmp/train-data')
 
 # deploy
 predictor = estimator.deploy(1, instance_type, wait=True)
@@ -30,8 +30,10 @@ print("completed deploy")
 time.sleep(5)
 
 # predict
-predictor.serializer = json_serializer
+predictor.serializer = JSONSerializer()
+#predictor.deserializer = JSONDeserializer
 print("running prediction")
-predictor.predict({'my_info': [ "s3 location", "other things.." ]})
-print("predicted")
+prediction = predictor.predict({'my_info': [ "s3 location", "other things.." ]})
+print("prediction done")
+print("predicted:"+str(prediction))
 predictor.delete_endpoint()

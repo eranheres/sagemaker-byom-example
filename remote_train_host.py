@@ -14,7 +14,7 @@ except ValueError:
     role = iam.get_role(RoleName='sagemaker')['Role']['Arn']
 
 sess = sage.Session()
-WORK_DIRECTORY = 'tmp/example-data'
+WORK_DIRECTORY = 'tmp/train-data'
 
 # upload data to S3
 s3_prefix = 'sagemaker-example'
