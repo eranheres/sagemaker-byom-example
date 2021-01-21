@@ -37,8 +37,8 @@ instance_type = 'ml.m4.xlarge'
 
 estimator = Estimator(role=role,
                       image_uri=ecr_image,
-                      train_instance_count=1,
-                      train_instance_type=instance_type,
+                      instance_count=1,
+                      instance_type=instance_type,
                       hyperparameters=hyperparameters)
 
 estimator.fit(data_location)

@@ -39,13 +39,11 @@ estimator = Estimator(role=role,
 estimator.fit(data_location)
 
 # transform batch data
-BATCH_WORK_DIRECTORY = 'tmp/train-data'
-s3_prefix = 'sagemaker-example'
-batch_input = sess.upload_data(BATCH_WORK_DIRECTORY, key_prefix=s3_prefix)
+BATCH_WORK_DIRECTORY = 'tmp/batch-data'
+s3_batch_prefix = 'sagemaker-example/batch-data'
+batch_input = sess.upload_data(BATCH_WORK_DIRECTORY, key_prefix=s3_batch_prefix)
 print("input data at"+str(batch_input))
-batch_output = ''
 print("creating transformer")
-exit(0)
 transformer = estimator.transformer(instance_count=1, instance_type='ml.m4.xlarge')
 print("transforming")
 transformer.transform(data=batch_input, data_type='S3Prefix', content_type='text/csv', split_type='Line')

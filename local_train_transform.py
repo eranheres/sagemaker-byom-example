@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import sagemaker
-import time
 from sagemaker.estimator import Estimator
-from sagemaker.predictor import json_serializer, json_deserializer
 import boto3
+import pathlib
 
 
 try:
@@ -27,13 +26,14 @@ print("trainig completed")
 
 # The location of the test dataset
 batch_input = 'file://tmp/batch-data/'
-batch_output = 'file://tmp/example-output'
+batch_output = 'file://' + str(pathlib.Path().absolute()) + '/tmp/example-output'
 
 print("creating transformer")
 transformer = estimator.transformer(instance_count=1,
                                     instance_type=instance_type,
                                     assemble_with='Line',
-                                    max_payload=1)
+                                    max_payload=1,
+                                    output_path=batch_output)
 print("transforming")
 transformer.transform(data=batch_input, content_type='text/csv', split_type='Line')
 transformer.wait()
