@@ -43,8 +43,6 @@ s3_batch_prefix = 'sagemaker-example/batch-data'
 batch_input = sess.upload_data(BATCH_WORK_DIRECTORY, key_prefix=s3_batch_prefix)
 print("input data at"+str(batch_input))
 print("creating transformer")
-transformer = estimator.transformer(instance_count=1, instance_type='ml.m4.xlarge')
-print("transforming")
-transformer.transform(data=batch_input, data_type='S3Prefix', content_type='text/csv', split_type='Line')
-print("waiting for termination")
-transformer.wait()
+transformer = estimator.transformer(instance_count=1,
+                                    instance_type='ml.m4.xlarge',
+                                    model_name="sagemaker-example-fixed")
